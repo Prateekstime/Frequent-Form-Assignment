@@ -23,7 +23,7 @@ export default function RoutesComponent() {
   const step = stepMap[location.pathname] || 1;
 
   return (
-    <div className="min-h-screen min-w-screen bg-gray-100 flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen min-w-screen bg-gray-100 flex flex-col items-center justify-center">
       <ProgressBar step={step} />
 
       <div className="bg-white p-8 shadow-lg rounded-lg w-full max-w-2xl">

@@ -1,17 +1,20 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true },
-  profilePhoto: String,
-  passwordHash: String,
-  profession: String,
-  companyName: String,
-  addressLine1: String,
-  country: String,
-  state: String,
-  city: String,
-  subscriptionPlan: String,
-  newsletter: Boolean,
+  profilePhoto: { type: String },  // filename stored
+  username: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true },
+
+  profession: { type: String, enum: ['Student', 'Developer', 'Entrepreneur'] },
+  companyName: { type: String },
+
+  addressLine1: { type: String },
+  country: { type: String },
+  state: { type: String },
+  city: { type: String },
+
+  subscriptionPlan: { type: String, enum: ['Basic', 'Pro', 'Enterprise'] },
+  newsletter: { type: Boolean, default: true },
 });
 
 module.exports = mongoose.model('User', userSchema);

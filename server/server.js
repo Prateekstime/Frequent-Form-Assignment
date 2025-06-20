@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-mongoose.connect('mongodb://localhost:27017/profileForm');
+mongoose.connect('mongodb://localhost:27017/userProfiles');
 
 app.use('/api/users', userRoutes);
 

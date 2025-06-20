@@ -17,9 +17,8 @@ function App() {
 
   return (
     <div className="min-h-screen  flex justify-center bg-gray-100  items-center ">
-        <div className="bg-green-800 px-10 flex justify-center"> 
-          
-
+        <div className="bg-green-800  flex justify-center"> 
+      
       <Routes />
         </div>
 

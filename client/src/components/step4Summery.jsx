@@ -1,58 +1,42 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FormContext } from "./FormContext";
 
 export default function Step4Summary() {
   const navigate = useNavigate();
-
-  // Dummy data for now; replace with props or context if needed
-  const [data] = useState({
-    username: "JohnDoe",
-    gender: "Male",
-    profession: "Developer",
-    companyName: "Tech Inc.",
-    addressLine1: "123 Main St",
-    country: "USA",
-    state: "California",
-    city: "Los Angeles",
-    subscriptionPlan: "Pro",
-    newsletter: true
-  });
-
-  const handlePrevious = () => navigate("/step3");
-  const handleFinish = () => navigate("/success");
+  const { formData } = useContext(FormContext);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <h2 className="text-xl font-semibold mb-4">Review Your Details</h2>
 
       <div className="grid grid-cols-1 gap-2 p-4 border border-gray-300 rounded">
-        <p><strong>Username:</strong> {data.username}</p>
-        <p><strong>Gender:</strong> {data.gender}</p>
-        <p><strong>Profession:</strong> {data.profession}</p>
-        {data.profession === "Entrepreneur" && (
-          <p><strong>Company:</strong> {data.companyName}</p>
+        <p><strong>Username:</strong> {formData.username}</p>
+        <p><strong>Gender:</strong> {formData.gender === "Other" ? formData.customGender : formData.gender}</p>
+        <p><strong>Profession:</strong> {formData.profession}</p>
+        {formData.profession === "Entrepreneur" && (
+          <p><strong>Company:</strong> {formData.companyName}</p>
         )}
-        <p><strong>Address:</strong> {data.addressLine1}</p>
-        <p><strong>Country:</strong> {data.country}</p>
-        <p><strong>State:</strong> {data.state}</p>
-        <p><strong>City:</strong> {data.city}</p>
-        <p><strong>Plan:</strong> {data.subscriptionPlan}</p>
-        <p><strong>Newsletter:</strong> {data.newsletter ? "Yes" : "No"}</p>
+        <p><strong>Address:</strong> {formData.addressLine1}</p>
+        <p><strong>Country:</strong> {formData.country}</p>
+        <p><strong>State:</strong> {formData.state}</p>
+        <p><strong>City:</strong> {formData.city}</p>
+        <p><strong>Plan:</strong> {formData.subscriptionPlan}</p>
+        <p><strong>Newsletter:</strong> {formData.newsletter ? "Yes" : "No"}</p>
       </div>
 
-      {/* ✅ Buttons */}
       <div className="flex justify-between mt-6">
         <button
-          onClick={handlePrevious}
+          onClick={() => navigate("/step3")}
           className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
         >
           Previous
         </button>
         <button
-          onClick={handleFinish}
+          onClick={() => navigate("/success")}
           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
         >
-          Finish
+          Submit
         </button>
       </div>
     </div>
