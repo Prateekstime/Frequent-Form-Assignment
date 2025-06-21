@@ -1,74 +1,99 @@
-const User = require('./models/User');
-const bcrypt = require('bcryptjs');
+// controllers/userController.js
+const Profile = require('../models/user.js');
 
-// ✅ Check Username Availability
-exports.checkUsername = async (req, res) => {
-  const exists = await User.exists({ username: req.params.username });
-  res.json({ available: !exists });
-};
-
-// ✅ Save or Update Profile
+// Save profile data (including photo URL)
 exports.saveProfile = async (req, res) => {
   try {
     const {
       username,
+      profilePhotoUrl,
+      gender,
       currentPassword,
       newPassword,
       profession,
-      companyName,
-      addressLine1,
+      address,
       country,
       state,
       city,
       subscriptionPlan,
-      newsletter,
+      newsletter
     } = req.body;
 
-    let user = await User.findOne({ username });
+    // Check if profile already exists
+    let profile = await Profile.findOne({ username });
 
-    // If new user, must have newPassword
-    if (!user && !newPassword) {
-      return res.status(400).json({ error: "New password required for new user" });
-    }
+    if (profile) {
+      // Update existing profile
+      if (profilePhotoUrl) profile.profilePhotoUrl = profilePhotoUrl;
+      profile.gender = gender;
+      profile.currentPassword = currentPassword;
+      profile.newPassword = newPassword;
+      profile.profession = profession;
+      profile.address = address;
+      profile.country = country;
+      profile.state = state;
+      profile.city = city;
+      profile.subscriptionPlan = subscriptionPlan;
+      profile.newsletter = newsletter;
 
-    // Create or update user
-    if (!user) {
-      user = new User({ username });
+      await profile.save();
+      return res.status(200).json({ message: 'Profile updated successfully', profile });
     } else {
-      // Check current password hash if changing password
-      if (newPassword && currentPassword) {
-        const match = await bcrypt.compare(currentPassword, user.passwordHash);
-        if (!match) {
-          return res.status(400).json({ error: "Current password is incorrect" });
-        }
-      }
+      // Create new profile
+      profile = new Profile({
+        username,
+        profilePhotoUrl: profilePhotoUrl || '',
+        gender,
+        currentPassword,
+        newPassword,
+        profession,
+        address,
+        country,
+        state,
+        city,
+        subscriptionPlan,
+        newsletter
+      });
+
+      await profile.save();
+      return res.status(201).json({ message: 'Profile created successfully', profile });
     }
-
-    // If new password provided, hash it
-    if (newPassword) {
-      const salt = await bcrypt.genSalt(10);
-      user.passwordHash = await bcrypt.hash(newPassword, salt);
-    }
-
-    // Update other fields
-    if (req.file) {
-      user.profilePhoto = req.file.filename;
-    }
-
-    user.profession = profession;
-    user.companyName = profession === 'Entrepreneur' ? companyName : '';
-    user.addressLine1 = addressLine1;
-    user.country = country;
-    user.state = state;
-    user.city = city;
-    user.subscriptionPlan = subscriptionPlan;
-    user.newsletter = newsletter === 'true';
-
-    await user.save();
-
-    res.json({ message: "Profile saved successfully!" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+  } catch (error) {
+    console.error('Error saving profile:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
+// Get profile data by username
+exports.getProfile = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const profile = await Profile.findOne({ username });
+
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
+    // Return profile data including photo URL
+    const profileData = {
+      username: profile.username,
+      profilePhotoUrl: profile.profilePhotoUrl,
+      gender: profile.gender,
+      profession: profile.profession,
+      address: profile.address,
+      country: profile.country,
+      state: profile.state,
+      city: profile.city,
+      subscriptionPlan: profile.subscriptionPlan,
+      newsletter: profile.newsletter,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt
+    };
+
+    res.status(200).json(profileData);
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
